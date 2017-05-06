@@ -1,64 +1,42 @@
 import os
+from Project import Project
 
-## Static fields
-line_marker = '*'
-prj_names = "Project_Names.txt"
-prj_data = "Project_Data.txt"
+names_folder = "Project_Names.txt"
+data_folder = "Project_Data.txt"
+page_break = "%s" % ('-'*30)
 
-#Static fields end
+def run():
+    project_loader = Project(names_folder, data_folder)
 
-#Dynamic fields
-project_names = {}
-project_directories = {}
-last = '000'
-#Dynamic fields end
+    while input("Press any key to continue or 'q' to quit: ") != 'q':
 
-
-names = open(prj_names, 'r')
-for line in names.readlines():
-    if line.startswith(line_marker):
-        project_names[line[1:4]] = line[5:-1]
-        project_directories[line[1:4]] = []
-        last = line[1:4]
-    
-names.close()
-
-
-directories = open(prj_data)
-for line in directories.readlines():
-    if line.startswith(line_marker):
-        project_directories[line[1:4]].append(line[5:-1]) 
-
-
-
-def open_project(project):
-
-    if project_directories.__contains__(project):
-        for path in project_directories[project]:
-            os.startfile(path)
-
+        print(page_break + "\nCurrent projects are: " + str(project_loader.project_names))
+                
+        menu_choice = input("\n1. Open project" +
+                            "\n2. Make project" +
+                            "\n3. Clear data\n"   +
+                            page_break       +
+                            "\nWhat would you like to do: ")
         
-def make_project(name, number_of_directories):
-    global last
-    last = ("%03d" % (int(last) + 1))
+        if menu_choice == '1':
+            project_loader.open_project(input(page_break +"\nEnter project ID: "))
+            print(page_break)
 
-    with open(prj_names, "a") as myfile:
-        myfile.write("%s%s-%s\n" %(line_marker, last, name))
-        project_names[last] = name
-        project_directories[last] = []
-
-    for directory in range(number_of_directories):
-        
-            with open(prj_data, "a") as myfile: 
-                directory = input("Enter directory: ")
-                myfile.write("%s%s-%s\n" %(line_marker, last, directory))
-                project_directories[last].append(directory)
+        elif menu_choice == '2':
+            project_loader.make_project(input(page_break + "\nName of project: "), int(input("Number of directories: ")))
+            print(page_break)
             
-def clear_data():
-    print("The saved projects are:\n " + str(project_names))
-    if input("Type 'DEL' to delete: ") == 'DEL':
-        open(prj_names, 'w').close()
-        open(prj_data, 'w').close()
+        elif menu_choice == '3':
+            print(page_break)
+            project_loader.clear_data()
+            print(page_break)
 
-    
+        elif menu_choice == 'q':
+            break
 
+        else:
+            print("Command not recognised.")
+            print(page_break)
+
+if __name__ == '__main__':
+    run()
